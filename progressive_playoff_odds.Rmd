@@ -1,0 +1,53 @@
+---
+title: "Visualizing Fantasy Playoff Odds 2025"
+output: html_notebook
+---
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(extrafont)
+extrafont::loadfonts(device="win")
+extrafont::loadfonts(device="pdf")
+extrafont::loadfonts(device="postscript")
+library(ggplot2)
+library(reshape2)
+library(ggalluvial)
+library(forcats)
+library(readxl)
+library(ggrepel)
+library(viridis)
+library(hrbrthemes)
+```
+
+```{r}
+weekly_chart <- read.csv("spray_chart.csv") #from ipynb script
+
+weekly_chart
+```
+
+```{r}
+tmp <- weekly_chart %>%
+  mutate(team2=team)
+
+tmp$team <- factor(tmp$team, c("The Abe W Memorial Champions","The Virtue Extollers","Kurtosis Warner","The Dream Team","Chip Kelly","Run CMC","Commish-ion Impossible","Rod the Great\'s Team","ACE of L.A.D.","Naberhood Watch","Takoma Queries (ex-Abe)","#CorruptCommish","The Terrible Towels","Maseratis Not Jerseys"))
+
+tmp %>%
+  ggplot( aes(x=week, y=Playoffs)) +
+    geom_line( data=tmp %>% dplyr::select(-team), aes(group=team2), color="grey", linewidth=0.5, alpha=0.5) +
+    geom_line( aes(color=team), color="#69b3a2", linewidth=1.2 )+
+    scale_color_viridis(discrete = TRUE) +
+    scale_x_continuous(breaks=seq(0,9,by=3)) +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=14, family = 'arial'),
+      panel.grid = element_blank()
+    ) +
+    ggtitle("OneUSAC 2025: Playoff Chance Progress through Week 9") +
+    facet_wrap(~team)
+```
+```{r}
+
+ggsave(file="C://Users//zachary.gozlan//Documents//COF2025_wk9_playoffs.jpeg", width=14, height=14, dpi=400)
+```
